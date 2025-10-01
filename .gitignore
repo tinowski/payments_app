@@ -200,6 +200,11 @@ robot_tests/*.log
 robot_tests/*.html
 robot_tests/*.xml
 
+# Robot Framework test output files (root level)
+report.html
+log.html
+output.xml
+
 # Coverage reports
 coverage.html
 coverage.out

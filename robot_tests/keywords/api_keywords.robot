@@ -33,7 +33,9 @@ Send GraphQL Request
 Create Payment
     [Documentation]    Create a new payment via GraphQL
     [Arguments]    ${amount}    ${currency}    ${description}
-    ${query}=    Set Variable    mutation { createPayment(input: { amount: ${amount}, currency: "${currency}", description: "${description}" }) { id amount currency description status createdAt updatedAt } }
+    ${escaped_description}=    Replace String    ${description}    "    \"
+    ${escaped_description}=    Replace String    ${escaped_description}    \    \\
+    ${query}=    Set Variable    mutation { createPayment(input: { amount: ${amount}, currency: "${currency}", description: "${escaped_description}" }) { id amount currency description status createdAt updatedAt } }
     ${response}=    Send GraphQL Request    ${query}
     Should Be Equal As Strings    ${response.status_code}    200
     ${json}=    Set Variable    ${response.json()}
@@ -64,10 +66,10 @@ Update Payment
     # Build the input object dynamically
     ${input_parts}=    Create List    id: "${payment_id}"
     
-    Run Keyword If    '${amount}' != '${EMPTY}'    Append To List    ${input_parts}    amount: ${amount}
-    Run Keyword If    '${currency}' != '${EMPTY}'    Append To List    ${input_parts}    currency: "${currency}"
-    Run Keyword If    '${description}' != '${EMPTY}'    Append To List    ${input_parts}    description: "${description}"
-    Run Keyword If    '${status}' != '${EMPTY}'    Append To List    ${input_parts}    status: ${status}
+    Run Keyword If    '${amount}' != '${EMPTY}' and '${amount}' != 'None'    Append To List    ${input_parts}    amount: ${amount}
+    Run Keyword If    '${currency}' != '${EMPTY}' and '${currency}' != 'None'    Append To List    ${input_parts}    currency: "${currency}"
+    Run Keyword If    '${description}' != '${EMPTY}' and '${description}' != 'None'    Append To List    ${input_parts}    description: "${description}"
+    Run Keyword If    '${status}' != '${EMPTY}' and '${status}' != 'None'    Append To List    ${input_parts}    status: ${status}
     
     ${input_string}=    Evaluate    ', '.join($input_parts)
     ${query}=    Set Variable    mutation { updatePayment(input: { ${input_string} }) { id amount currency description status createdAt updatedAt } }
