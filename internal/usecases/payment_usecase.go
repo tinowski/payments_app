@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"payments_app/internal/domain"
+	"strings"
 	"time"
 )
 
@@ -39,10 +40,10 @@ func (uc *PaymentUseCase) CreatePayment(ctx context.Context, input CreatePayment
 	if input.Amount <= 0 {
 		return nil, errors.New("amount must be greater than 0")
 	}
-	if input.Currency == "" {
+	if strings.TrimSpace(input.Currency) == "" {
 		return nil, errors.New("currency is required")
 	}
-	if input.Description == "" {
+	if strings.TrimSpace(input.Description) == "" {
 		return nil, errors.New("description is required")
 	}
 
@@ -102,14 +103,14 @@ func (uc *PaymentUseCase) UpdatePayment(ctx context.Context, input UpdatePayment
 		payment.Amount = *input.Amount
 	}
 	if input.Currency != nil {
-		if *input.Currency == "" {
-			return nil, errors.New("currency cannot be empty")
+		if strings.TrimSpace(*input.Currency) == "" {
+			return nil, errors.New("currency is required")
 		}
 		payment.Currency = *input.Currency
 	}
 	if input.Description != nil {
-		if *input.Description == "" {
-			return nil, errors.New("description cannot be empty")
+		if strings.TrimSpace(*input.Description) == "" {
+			return nil, errors.New("description is required")
 		}
 		payment.Description = *input.Description
 	}
