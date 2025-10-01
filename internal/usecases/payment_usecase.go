@@ -43,12 +43,21 @@ func (uc *PaymentUseCase) CreatePayment(ctx context.Context, input CreatePayment
 	if strings.TrimSpace(input.Currency) == "" {
 		return nil, errors.New("currency is required")
 	}
+	// Validate currency format (should be 3 characters, letters only)
+	currency := strings.TrimSpace(input.Currency)
+	if len(currency) != 3 {
+		return nil, errors.New("currency must be exactly 3 characters")
+	}
+	if !isValidCurrencyCode(currency) {
+		return nil, errors.New("currency must contain only letters")
+	}
 	if strings.TrimSpace(input.Description) == "" {
 		return nil, errors.New("description is required")
 	}
 
-	// Create payment entity
-	payment := domain.NewPayment(input.Amount, input.Currency, input.Description)
+	// Create payment entity with normalized data
+	// Note: Domain layer expects pre-normalized data (trimmed, validated)
+	payment := domain.NewPayment(input.Amount, currency, strings.TrimSpace(input.Description))
 
 	// Save to repository
 	err := uc.repo.Create(ctx, payment)
@@ -106,13 +115,22 @@ func (uc *PaymentUseCase) UpdatePayment(ctx context.Context, input UpdatePayment
 		if strings.TrimSpace(*input.Currency) == "" {
 			return nil, errors.New("currency is required")
 		}
-		payment.Currency = *input.Currency
+		// Validate currency format (should be 3 characters, letters only)
+		currency := strings.TrimSpace(*input.Currency)
+		if len(currency) != 3 {
+			return nil, errors.New("currency must be exactly 3 characters")
+		}
+		if !isValidCurrencyCode(currency) {
+			return nil, errors.New("currency must contain only letters")
+		}
+		payment.Currency = currency
 	}
 	if input.Description != nil {
 		if strings.TrimSpace(*input.Description) == "" {
 			return nil, errors.New("description is required")
 		}
-		payment.Description = *input.Description
+		// Normalize description before assignment
+		payment.Description = strings.TrimSpace(*input.Description)
 	}
 	if input.Status != nil {
 		payment.UpdateStatus(*input.Status)
@@ -148,4 +166,14 @@ func (uc *PaymentUseCase) DeletePayment(ctx context.Context, id string) error {
 	}
 
 	return nil
+}
+
+// isValidCurrencyCode validates that a currency code contains only letters
+func isValidCurrencyCode(currency string) bool {
+	for _, char := range currency {
+		if char < 'A' || char > 'Z' {
+			return false
+		}
+	}
+	return true
 }

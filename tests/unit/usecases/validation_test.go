@@ -67,22 +67,22 @@ func TestPaymentUseCase_CreatePayment_AdvancedValidation(t *testing.T) {
 		{
 			name:        "currency with special characters",
 			input:       usecases.CreatePaymentInput{Amount: 100, Currency: "USD-USD", Description: "Test"},
-			expectedErr: "",
+			expectedErr: "currency must be exactly 3 characters",
 		},
 		{
 			name:        "currency with numbers",
 			input:       usecases.CreatePaymentInput{Amount: 100, Currency: "USD123", Description: "Test"},
-			expectedErr: "",
+			expectedErr: "currency must be exactly 3 characters",
 		},
 		{
 			name:        "currency with mixed case",
 			input:       usecases.CreatePaymentInput{Amount: 100, Currency: "Usd", Description: "Test"},
-			expectedErr: "",
+			expectedErr: "currency must contain only letters",
 		},
 		{
 			name:        "currency with lowercase",
 			input:       usecases.CreatePaymentInput{Amount: 100, Currency: "usd", Description: "Test"},
-			expectedErr: "",
+			expectedErr: "currency must contain only letters",
 		},
 
 		// Description validation

@@ -56,9 +56,9 @@ check_server() {
     else
         echo -e "${RED}❌ Server is not running${NC}"
         echo -e "${YELLOW}Please start the server first:${NC}"
-        echo "  ./payments_app"
-        echo "  or"
         echo "  make run"
+        echo "  # or, if the binary is in the current directory:"
+        echo "  ./payments_app"
         return 1
     fi
 }
@@ -106,6 +106,7 @@ run_tests() {
     
     echo -e "${BLUE}Running $test_type tests...${NC}"
     
+    # Centralized mapping of test types to suite paths
     case $test_type in
         "all")
             robot $robot_options robot_tests/run_tests.robot

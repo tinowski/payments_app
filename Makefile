@@ -61,23 +61,23 @@ robot-install:
 
 robot-test:
 	@echo "Running Robot Framework tests..."
-	./run_robot_tests.sh all
+	./run_robot_framework_tests.sh all
 
 robot-smoke:
 	@echo "Running Robot Framework smoke tests..."
-	./run_robot_tests.sh smoke
+	./run_robot_framework_tests.sh smoke
 
 robot-crud:
 	@echo "Running Robot Framework CRUD tests..."
-	./run_robot_tests.sh crud
+	./run_robot_framework_tests.sh crud
 
 robot-validation:
 	@echo "Running Robot Framework validation tests..."
-	./run_robot_tests.sh validation
+	./run_robot_framework_tests.sh validation
 
 robot-performance:
 	@echo "Running Robot Framework performance tests..."
-	./run_robot_tests.sh performance
+	./run_robot_framework_tests.sh performance
 
 robot-clean:
 	@echo "Cleaning Robot Framework results..."

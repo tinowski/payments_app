@@ -28,6 +28,7 @@ type Payment struct {
 }
 
 // NewPayment creates a new payment with generated ID and timestamps
+// Note: This function expects pre-normalized data (trimmed, validated) from the use case layer
 func NewPayment(amount float64, currency, description string) *Payment {
 	now := time.Now()
 	return &Payment{
