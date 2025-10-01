@@ -2,67 +2,18 @@ package usecases_test
 
 import (
 	"context"
-	"errors"
 	"payments_app/internal/domain"
 	"payments_app/internal/usecases"
+	"payments_app/tests/helpers"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-// MockPaymentRepository is a mock implementation of PaymentRepository
-type MockPaymentRepository struct {
-	payments map[string]*domain.Payment
-}
-
-func NewMockPaymentRepository() *MockPaymentRepository {
-	return &MockPaymentRepository{
-		payments: make(map[string]*domain.Payment),
-	}
-}
-
-func (m *MockPaymentRepository) Create(ctx context.Context, payment *domain.Payment) error {
-	m.payments[payment.ID] = payment
-	return nil
-}
-
-func (m *MockPaymentRepository) GetByID(ctx context.Context, id string) (*domain.Payment, error) {
-	payment, exists := m.payments[id]
-	if !exists {
-		return nil, errors.New("payment not found")
-	}
-	return payment, nil
-}
-
-func (m *MockPaymentRepository) GetAll(ctx context.Context) ([]*domain.Payment, error) {
-	payments := make([]*domain.Payment, 0, len(m.payments))
-	for _, payment := range m.payments {
-		payments = append(payments, payment)
-	}
-	return payments, nil
-}
-
-func (m *MockPaymentRepository) Update(ctx context.Context, payment *domain.Payment) error {
-	_, exists := m.payments[payment.ID]
-	if !exists {
-		return errors.New("payment not found")
-	}
-	m.payments[payment.ID] = payment
-	return nil
-}
-
-func (m *MockPaymentRepository) Delete(ctx context.Context, id string) error {
-	_, exists := m.payments[id]
-	if !exists {
-		return errors.New("payment not found")
-	}
-	delete(m.payments, id)
-	return nil
-}
-
 func TestPaymentUseCase_CreatePayment(t *testing.T) {
-	repo := NewMockPaymentRepository()
+	repo := helpers.NewMockPaymentRepository()
 	useCase := usecases.NewPaymentUseCase(repo)
 
 	input := usecases.CreatePaymentInput{
@@ -82,7 +33,7 @@ func TestPaymentUseCase_CreatePayment(t *testing.T) {
 }
 
 func TestPaymentUseCase_CreatePayment_Validation(t *testing.T) {
-	repo := NewMockPaymentRepository()
+	repo := helpers.NewMockPaymentRepository()
 	useCase := usecases.NewPaymentUseCase(repo)
 
 	tests := []struct {
@@ -122,7 +73,7 @@ func TestPaymentUseCase_CreatePayment_Validation(t *testing.T) {
 }
 
 func TestPaymentUseCase_GetPayment(t *testing.T) {
-	repo := NewMockPaymentRepository()
+	repo := helpers.NewMockPaymentRepository()
 	useCase := usecases.NewPaymentUseCase(repo)
 
 	// Create a payment first
@@ -144,7 +95,7 @@ func TestPaymentUseCase_GetPayment(t *testing.T) {
 }
 
 func TestPaymentUseCase_GetPayment_NotFound(t *testing.T) {
-	repo := NewMockPaymentRepository()
+	repo := helpers.NewMockPaymentRepository()
 	useCase := usecases.NewPaymentUseCase(repo)
 
 	_, err := useCase.GetPayment(context.Background(), "non-existent-id")
@@ -153,7 +104,7 @@ func TestPaymentUseCase_GetPayment_NotFound(t *testing.T) {
 }
 
 func TestPaymentUseCase_GetAllPayments(t *testing.T) {
-	repo := NewMockPaymentRepository()
+	repo := helpers.NewMockPaymentRepository()
 	useCase := usecases.NewPaymentUseCase(repo)
 
 	// Create multiple payments
@@ -175,7 +126,7 @@ func TestPaymentUseCase_GetAllPayments(t *testing.T) {
 }
 
 func TestPaymentUseCase_UpdatePayment(t *testing.T) {
-	repo := NewMockPaymentRepository()
+	repo := helpers.NewMockPaymentRepository()
 	useCase := usecases.NewPaymentUseCase(repo)
 
 	// Create a payment first
@@ -206,7 +157,7 @@ func TestPaymentUseCase_UpdatePayment(t *testing.T) {
 }
 
 func TestPaymentUseCase_DeletePayment(t *testing.T) {
-	repo := NewMockPaymentRepository()
+	repo := helpers.NewMockPaymentRepository()
 	useCase := usecases.NewPaymentUseCase(repo)
 
 	// Create a payment first
@@ -227,4 +178,96 @@ func TestPaymentUseCase_DeletePayment(t *testing.T) {
 	_, err = useCase.GetPayment(context.Background(), createdPayment.ID)
 	assert.Error(t, err)
 	assert.Contains(t, err.Error(), "payment not found")
+}
+
+func TestPaymentUseCase_UpdatePayment_TimestampUpdate(t *testing.T) {
+	repo := helpers.NewMockPaymentRepository()
+	useCase := usecases.NewPaymentUseCase(repo)
+
+	// Create a payment first
+	input := usecases.CreatePaymentInput{
+		Amount:      100.50,
+		Currency:    "USD",
+		Description: "Test payment",
+	}
+
+	createdPayment, err := useCase.CreatePayment(context.Background(), input)
+	require.NoError(t, err)
+	originalUpdatedAt := createdPayment.UpdatedAt
+
+	// Wait a small amount to ensure timestamp difference
+	time.Sleep(10 * time.Millisecond)
+
+	// Test 1: Update payment without status change (should update timestamp)
+	newAmount := 200.75
+	updateInput := usecases.UpdatePaymentInput{
+		ID:     createdPayment.ID,
+		Amount: &newAmount,
+		// No status change - this should still update the timestamp
+	}
+
+	updatedPayment, err := useCase.UpdatePayment(context.Background(), updateInput)
+	require.NoError(t, err)
+
+	// Verify the timestamp was updated
+	assert.True(t, updatedPayment.UpdatedAt.After(originalUpdatedAt),
+		"UpdatedAt timestamp should be newer than original timestamp")
+	assert.Equal(t, newAmount, updatedPayment.Amount)
+	assert.Equal(t, createdPayment.Status, updatedPayment.Status) // Status unchanged
+
+	// Test 2: Update payment with status change (should also update timestamp)
+	time.Sleep(10 * time.Millisecond)
+	secondUpdateTime := updatedPayment.UpdatedAt
+
+	newStatus := domain.PaymentStatusCompleted
+	secondUpdateInput := usecases.UpdatePaymentInput{
+		ID:     createdPayment.ID,
+		Status: &newStatus,
+	}
+
+	finalPayment, err := useCase.UpdatePayment(context.Background(), secondUpdateInput)
+	require.NoError(t, err)
+
+	// Verify the timestamp was updated again
+	assert.True(t, finalPayment.UpdatedAt.After(secondUpdateTime),
+		"UpdatedAt timestamp should be newer than previous update")
+	assert.Equal(t, newStatus, finalPayment.Status)
+	assert.Equal(t, newAmount, finalPayment.Amount) // Amount unchanged
+}
+
+func TestPaymentUseCase_UpdatePayment_TimestampUpdate_OnlyDescription(t *testing.T) {
+	repo := helpers.NewMockPaymentRepository()
+	useCase := usecases.NewPaymentUseCase(repo)
+
+	// Create a payment first
+	input := usecases.CreatePaymentInput{
+		Amount:      100.50,
+		Currency:    "USD",
+		Description: "Original description",
+	}
+
+	createdPayment, err := useCase.CreatePayment(context.Background(), input)
+	require.NoError(t, err)
+	originalUpdatedAt := createdPayment.UpdatedAt
+
+	// Wait a small amount to ensure timestamp difference
+	time.Sleep(10 * time.Millisecond)
+
+	// Update only the description (no status change)
+	newDescription := "Updated description"
+	updateInput := usecases.UpdatePaymentInput{
+		ID:          createdPayment.ID,
+		Description: &newDescription,
+		// No status change - this should still update the timestamp
+	}
+
+	updatedPayment, err := useCase.UpdatePayment(context.Background(), updateInput)
+	require.NoError(t, err)
+
+	// Verify the timestamp was updated
+	assert.True(t, updatedPayment.UpdatedAt.After(originalUpdatedAt),
+		"UpdatedAt timestamp should be newer when updating description without status change")
+	assert.Equal(t, newDescription, updatedPayment.Description)
+	assert.Equal(t, createdPayment.Status, updatedPayment.Status) // Status unchanged
+	assert.Equal(t, createdPayment.Amount, updatedPayment.Amount) // Amount unchanged
 }

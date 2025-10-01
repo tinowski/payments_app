@@ -181,6 +181,20 @@ venv.bak/
 target/
 
 # =============================================================================
+# DEVELOPMENT SCRIPTS - PRIVATE
+# =============================================================================
+
+# Development and testing scripts
+scripts/
+.dev/
+test-scripts/
+seed-scripts/
+
+# Test execution scripts (development tools)
+run_tests.sh
+run_tests_organized.sh
+
+# =============================================================================
 # PAYMENT-SPECIFIC SECURITY EXCLUSIONS
 # =============================================================================
 
