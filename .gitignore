@@ -190,9 +190,9 @@ scripts/
 test-scripts/
 seed-scripts/
 
-# Test execution scripts (development tools)
-run_tests.sh
-run_tests_organized.sh
+# Test execution scripts (development tools) - exclude root level only
+/run_tests.sh
+/run_tests_organized.sh
 
 # Robot Framework test results and reports
 robot_tests/results/
