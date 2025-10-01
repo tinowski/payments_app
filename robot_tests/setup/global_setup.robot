@@ -14,7 +14,7 @@ ${SESSION_NAME}  payments_api
 ${TEST_TIMEOUT}  30
 
 # Test data storage
-${CREATED_PAYMENTS}    @{EMPTY}
+@{CREATED_PAYMENTS}    @{EMPTY}
 ${TEST_START_TIME}     ${EMPTY}
 
 *** Keywords ***

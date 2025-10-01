@@ -137,13 +137,14 @@ Test Payment Lifecycle Validation
     ${payment_id}=    Extract Payment ID    ${create_response}
     
     # Update payment
-    ${update_response}=    Update Payment    ${payment_id}    amount=${amount * 2}    status=COMPLETED
-    Should Be Equal As Numbers    ${update_response['data']['updatePayment']['amount']}    ${amount * 2}
+    ${double_amount}=    Evaluate    ${amount} * 2
+    ${update_response}=    Update Payment    ${payment_id}    amount=${double_amount}    status=COMPLETED
+    Should Be Equal As Numbers    ${update_response['data']['updatePayment']['amount']}    ${double_amount}
     Should Be Equal As Strings    ${update_response['data']['updatePayment']['status']}    COMPLETED
     
     # Verify final state
     ${final_response}=    Get Payment    ${payment_id}
-    Should Be Equal As Numbers    ${final_response['data']['payment']['amount']}    ${amount * 2}
+    Should Be Equal As Numbers    ${final_response['data']['payment']['amount']}    ${double_amount}
     Should Be Equal As Strings    ${final_response['data']['payment']['status']}    COMPLETED
     
     # Clean up

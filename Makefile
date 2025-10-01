@@ -54,35 +54,27 @@ test-coverage-new:
 	go test -coverprofile=coverage.out ./tests/unit/... ./tests/integration/... ./tests/e2e/...
 	go tool cover -html=coverage.out -o coverage.html
 
-# Robot Framework Tests
+# Robot Framework Tests (delegated to Makefile.robot)
 robot-install:
-	@echo "Installing Robot Framework dependencies..."
-	pip3 install -r requirements.txt
+	$(MAKE) -f Makefile.robot robot-install
 
 robot-test:
-	@echo "Running Robot Framework tests..."
-	./run_robot_framework_tests.sh all
+	$(MAKE) -f Makefile.robot robot-test
 
 robot-smoke:
-	@echo "Running Robot Framework smoke tests..."
-	./run_robot_framework_tests.sh smoke
+	$(MAKE) -f Makefile.robot robot-smoke
 
 robot-crud:
-	@echo "Running Robot Framework CRUD tests..."
-	./run_robot_framework_tests.sh crud
+	$(MAKE) -f Makefile.robot robot-crud
 
 robot-validation:
-	@echo "Running Robot Framework validation tests..."
-	./run_robot_framework_tests.sh validation
+	$(MAKE) -f Makefile.robot robot-validation
 
 robot-performance:
-	@echo "Running Robot Framework performance tests..."
-	./run_robot_framework_tests.sh performance
+	$(MAKE) -f Makefile.robot robot-performance
 
 robot-clean:
-	@echo "Cleaning Robot Framework results..."
-	rm -rf robot_reports
-	rm -rf robot_results
+	$(MAKE) -f Makefile.robot robot-clean
 
 
 # Clean build artifacts
