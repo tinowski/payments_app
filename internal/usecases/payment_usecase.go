@@ -40,16 +40,10 @@ func (uc *PaymentUseCase) CreatePayment(ctx context.Context, input CreatePayment
 	if input.Amount <= 0 {
 		return nil, errors.New("amount must be greater than 0")
 	}
-	if strings.TrimSpace(input.Currency) == "" {
-		return nil, errors.New("currency is required")
-	}
-	// Validate currency format (should be 3 characters, letters only)
-	currency := strings.TrimSpace(input.Currency)
-	if len(currency) != 3 {
-		return nil, errors.New("currency must be exactly 3 characters")
-	}
-	if !isValidCurrencyCode(currency) {
-		return nil, errors.New("currency must contain only letters")
+	// Validate and normalize currency
+	currency, currencyErr := validateAndNormalizeCurrency(input.Currency)
+	if currencyErr != nil {
+		return nil, currencyErr
 	}
 	if strings.TrimSpace(input.Description) == "" {
 		return nil, errors.New("description is required")
@@ -112,16 +106,10 @@ func (uc *PaymentUseCase) UpdatePayment(ctx context.Context, input UpdatePayment
 		payment.Amount = *input.Amount
 	}
 	if input.Currency != nil {
-		if strings.TrimSpace(*input.Currency) == "" {
-			return nil, errors.New("currency is required")
-		}
-		// Validate currency format (should be 3 characters, letters only)
-		currency := strings.TrimSpace(*input.Currency)
-		if len(currency) != 3 {
-			return nil, errors.New("currency must be exactly 3 characters")
-		}
-		if !isValidCurrencyCode(currency) {
-			return nil, errors.New("currency must contain only letters")
+		// Validate and normalize currency
+		currency, currencyErr := validateAndNormalizeCurrency(*input.Currency)
+		if currencyErr != nil {
+			return nil, currencyErr
 		}
 		payment.Currency = currency
 	}
@@ -166,6 +154,23 @@ func (uc *PaymentUseCase) DeletePayment(ctx context.Context, id string) error {
 	}
 
 	return nil
+}
+
+// validateAndNormalizeCurrency validates and normalizes a currency code
+func validateAndNormalizeCurrency(currency string) (string, error) {
+	currency = strings.TrimSpace(currency)
+	if currency == "" {
+		return "", errors.New("currency is required")
+	}
+	if len(currency) != 3 {
+		return "", errors.New("currency must be exactly 3 characters")
+	}
+	// Normalize currency to uppercase for validation
+	currency = strings.ToUpper(currency)
+	if !isValidCurrencyCode(currency) {
+		return "", errors.New("currency must contain only letters")
+	}
+	return currency, nil
 }
 
 // isValidCurrencyCode validates that a currency code contains only letters
