@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  payments-api:
+    build:
+      context: ../../
+      dockerfile: deployments/docker/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SERVER_PORT=8080
+      - SERVER_HOST=0.0.0.0
+      - DATABASE_PATH=/root/payments.db
+    volumes:
+      - payments_data:/root
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  payments_data:
