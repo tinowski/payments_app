@@ -24,16 +24,14 @@ Test Create Payment With Empty Description
     Test Invalid Payment Creation    100    USD    ${EMPTY}    description is required
 
 Test Create Payment With Whitespace Currency
-    [Documentation]    Test creating payment with whitespace-only currency (currently allows whitespace)
-    ${whitespace_currency}=    Set Variable    "   "
-    ${response}=    Create Payment    100    ${whitespace_currency}    Test payment
-    Verify Payment Data    ${response}    100    ${whitespace_currency}    Test payment
+    [Documentation]    Test creating payment with whitespace-only currency (should be rejected)
+    ${whitespace_currency}=    Set Variable    \u0020\u0020\u0020
+    Test Invalid Payment Creation    100    ${whitespace_currency}    Test payment    currency is required
 
 Test Create Payment With Whitespace Description
-    [Documentation]    Test creating payment with whitespace-only description (currently allows whitespace)
-    ${whitespace_description}=    Set Variable    "   "
-    ${response}=    Create Payment    100    USD    ${whitespace_description}
-    Verify Payment Data    ${response}    100    USD    ${whitespace_description}
+    [Documentation]    Test creating payment with whitespace-only description (should be rejected)
+    ${whitespace_description}=    Set Variable    \u0020\u0020\u0020
+    Test Invalid Payment Creation    100    USD    ${whitespace_description}    description is required
 
 Test Update Payment With Invalid Amount
     [Documentation]    Test updating payment with invalid amount

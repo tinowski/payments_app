@@ -12,7 +12,10 @@ Test Invalid Payment Creation
     [Arguments]    ${amount}    ${currency}    ${description}    ${expected_error}
     
     ${query}=    Set Variable    mutation { createPayment(input: { amount: ${amount}, currency: "${currency}", description: "${description}" }) { id amount currency description status } }
+    Log    Generated query: ${query}
     ${response}=    Send GraphQL Request    ${query}
+    Log    Response status: ${response.status_code}
+    Log    Response body: ${response.text}
     Should Be Equal As Strings    ${response.status_code}    200
     
     ${json}=    Set Variable    ${response.json()}
