@@ -51,7 +51,7 @@ Test Case Setup
     
     # Ensure we have a fresh session
     Create Session    ${SESSION_NAME}    ${BASE_URL}
-    Set Headers    ${headers}    Content-Type=application/json
+    Set Headers    ${SESSION_NAME}    Content-Type=application/json
     
     # Verify server is still responsive
     Health Check

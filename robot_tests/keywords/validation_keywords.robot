@@ -48,7 +48,7 @@ Test Non-Existent Payment Operations
 
 Test Get Non-Existent Payment
     [Documentation]    Test getting non-existent payment
-    [Arguments]    ${payment_id}    ${expected_error}
+    [Arguments]    ${payment_id}    ${expected_error}=${None}
     
     ${query}=    Set Variable    query { payment(id: "${payment_id}") { id amount currency description status } }
     ${response}=    Send GraphQL Request    ${query}
@@ -56,10 +56,14 @@ Test Get Non-Existent Payment
     
     ${json}=    Set Variable    ${response.json()}
     Should Be Equal    ${json['data']['payment']}    ${None}
+    
+    # Validate error message if provided
+    Run Keyword If    '${expected_error}' != '${None}' and '${expected_error}' != ''
+    ...    Should Contain    ${json}    errors
 
 Test Update Non-Existent Payment
     [Documentation]    Test updating non-existent payment
-    [Arguments]    ${payment_id}    ${expected_error}
+    [Arguments]    ${payment_id}    ${expected_error}=payment not found
     
     ${query}=    Set Variable    mutation { updatePayment(input: { id: "${payment_id}", amount: 100 }) { id amount currency description status } }
     ${response}=    Send GraphQL Request    ${query}
@@ -71,7 +75,7 @@ Test Update Non-Existent Payment
 
 Test Delete Non-Existent Payment
     [Documentation]    Test deleting non-existent payment
-    [Arguments]    ${payment_id}    ${expected_error}
+    [Arguments]    ${payment_id}    ${expected_error}=payment not found
     
     ${query}=    Set Variable    mutation { deletePayment(id: "${payment_id}") }
     ${response}=    Send GraphQL Request    ${query}

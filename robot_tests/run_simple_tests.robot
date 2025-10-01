@@ -51,8 +51,9 @@ Test Payment Performance
     
     # Create multiple payments
     FOR    ${i}    IN RANGE    5
-        ${response}=    Create Payment    ${100 + ${i}}    USD    Performance test payment ${i}
-        Verify Payment Data    ${response}    ${100 + ${i}}    USD    Performance test payment ${i}
+        ${amount}=    Evaluate    100 + ${i}
+        ${response}=    Create Payment    ${amount}    USD    Performance test payment ${i}
+        Verify Payment Data    ${response}    ${amount}    USD    Performance test payment ${i}
     END
     
     ${end_time}=    Get Current Date    result_format=epoch

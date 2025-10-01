@@ -84,9 +84,9 @@ go tool cover -html=coverage.out -o coverage.html
 echo ""
 echo -e "${YELLOW}📋 TEST SUMMARY${NC}"
 echo "==============="
-echo -e "Unit Tests:        $([ $unit_passed -eq 0 ] && echo -e "${GREEN}✅ PASSED${NC}" || echo -e "${RED}❌ FAILED${NC}")"
-echo -e "Integration Tests: $([ $integration_passed -eq 0 ] && echo -e "${GREEN}✅ PASSED${NC}" || echo -e "${RED}❌ FAILED${NC}")"
-echo -e "E2E Tests:         $([ $e2e_passed -eq 0 ] && echo -e "${GREEN}✅ PASSED${NC}" || echo -e "${RED}❌ FAILED${NC}")"
+echo -e "Unit Tests:        $([ $unit_passed -eq 0 ] && echo -e '${GREEN}✅ PASSED${NC}' || echo -e '${RED}❌ FAILED${NC}')"
+echo -e "Integration Tests: $([ $integration_passed -eq 0 ] && echo -e '${GREEN}✅ PASSED${NC}' || echo -e '${RED}❌ FAILED${NC}')"
+echo -e "E2E Tests:         $([ $e2e_passed -eq 0 ] && echo -e '${GREEN}✅ PASSED${NC}' || echo -e '${RED}❌ FAILED${NC}')"
 
 # Overall result
 if [ $unit_passed -eq 0 ] && [ $integration_passed -eq 0 ] && [ $e2e_passed -eq 0 ]; then

@@ -33,8 +33,9 @@ Test Multiple Payment Creation Performance
     ${start_time}=    Get Current Date    result_format=epoch
     
     FOR    ${i}    IN RANGE    ${count}
-        ${response}=    Create Payment    ${100 + ${i}}    USD    Performance test payment ${i}
-        Verify Payment Data    ${response}    ${100 + ${i}}    USD    Performance test payment ${i}
+        ${amount}=    Evaluate    100 + ${i}
+        ${response}=    Create Payment    ${amount}    USD    Performance test payment ${i}
+        Verify Payment Data    ${response}    ${amount}    USD    Performance test payment ${i}
     END
     
     ${end_time}=    Get Current Date    result_format=epoch
@@ -78,8 +79,9 @@ Test Concurrent Payment Creation
     
     # Simulate concurrent requests by creating payments rapidly
     FOR    ${i}    IN RANGE    ${count}
-        ${response}=    Create Payment    ${50 + ${i}}    USD    Concurrent payment ${i}
-        Verify Payment Data    ${response}    ${50 + ${i}}    USD    Concurrent payment ${i}
+        ${amount}=    Evaluate    50 + ${i}
+        ${response}=    Create Payment    ${amount}    USD    Concurrent payment ${i}
+        Verify Payment Data    ${response}    ${amount}    USD    Concurrent payment ${i}
     END
     
     ${end_time}=    Get Current Date    result_format=epoch
@@ -113,8 +115,9 @@ Test Memory Usage Stability
     FOR    ${batch}    IN RANGE    ${batches}
         Log    Processing batch ${batch + 1}
         FOR    ${i}    IN RANGE    ${requests_per_batch}
-            ${response}=    Create Payment    ${100 + ${i}}    USD    Batch ${batch} payment ${i}
-            Verify Payment Data    ${response}    ${100 + ${i}}    USD    Batch ${batch} payment ${i}
+            ${amount}=    Evaluate    100 + ${i}
+            ${response}=    Create Payment    ${amount}    USD    Batch ${batch} payment ${i}
+            Verify Payment Data    ${response}    ${amount}    USD    Batch ${batch} payment ${i}
         END
         # Small delay between batches
         Sleep    0.5s
@@ -127,13 +130,23 @@ Test Response Time Under Load
     [Documentation]    Test response times under various load conditions
     [Arguments]    ${load_level}=medium
     
-    ${count}=    Set Variable If    '${load_level}' == 'light'    5    '${load_level}' == 'medium'    20    '${load_level}' == 'heavy'    50
+    # Set count based on load level
+    IF    '${load_level}' == 'light'
+        ${count}=    Set Variable    5
+    ELSE IF    '${load_level}' == 'medium'
+        ${count}=    Set Variable    20
+    ELSE IF    '${load_level}' == 'heavy'
+        ${count}=    Set Variable    50
+    ELSE
+        Fail    Unknown load level: ${load_level}
+    END
     
     ${start_time}=    Get Current Date    result_format=epoch
     
     FOR    ${i}    IN RANGE    ${count}
-        ${response}=    Create Payment    ${100 + ${i}}    USD    Load test payment ${i}
-        Verify Payment Data    ${response}    ${100 + ${i}}    USD    Load test payment ${i}
+        ${amount}=    Evaluate    100 + ${i}
+        ${response}=    Create Payment    ${amount}    USD    Load test payment ${i}
+        Verify Payment Data    ${response}    ${amount}    USD    Load test payment ${i}
     END
     
     ${end_time}=    Get Current Date    result_format=epoch
@@ -143,7 +156,15 @@ Test Response Time Under Load
     Log    Load test (${load_level}): ${count} payments in ${total_time}s (avg: ${avg_time}s per payment)
     
     # Set different expectations based on load level
-    ${max_avg_time}=    Set Variable If    '${load_level}' == 'light'    1    '${load_level}' == 'medium'    2    '${load_level}' == 'heavy'    5
+    IF    '${load_level}' == 'light'
+        ${max_avg_time}=    Set Variable    1
+    ELSE IF    '${load_level}' == 'medium'
+        ${max_avg_time}=    Set Variable    2
+    ELSE IF    '${load_level}' == 'heavy'
+        ${max_avg_time}=    Set Variable    5
+    ELSE
+        Fail    Unknown load level: ${load_level}
+    END
     Should Be True    ${avg_time} < ${max_avg_time}    Average response time should be less than ${max_avg_time} seconds for ${load_level} load
 
 Test API Stress Test
@@ -155,8 +176,9 @@ Test API Stress Test
     ${request_count}=    Set Variable    0
     
     WHILE    ${start_time} < ${end_time}
-        ${response}=    Create Payment    ${100 + ${request_count}}    USD    Stress test payment ${request_count}
-        Verify Payment Data    ${response}    ${100 + ${request_count}}    USD    Stress test payment ${request_count}
+        ${amount}=    Evaluate    100 + ${request_count}
+        ${response}=    Create Payment    ${amount}    USD    Stress test payment ${request_count}
+        Verify Payment Data    ${response}    ${amount}    USD    Stress test payment ${request_count}
         ${request_count}=    Evaluate    ${request_count} + 1
         ${start_time}=    Get Current Date    result_format=epoch
     END

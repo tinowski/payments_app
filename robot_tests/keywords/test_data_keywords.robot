@@ -24,7 +24,7 @@ Generate Test Payment Data
 Set Normal Payment Data
     [Documentation]    Set normal payment data
     [Arguments]    ${data}
-    ${amount}=    Evaluate    random.randint(1, 1000)
+    ${amount}=    Evaluate    random.randint(1, 1000)    modules=random
     ${currency}=    Get From List    ${VALID_CURRENCIES}    0
     ${description}=    Set Variable    Test payment ${amount}
     
@@ -35,7 +35,7 @@ Set Normal Payment Data
 Set Large Amount Payment Data
     [Documentation]    Set large amount payment data
     [Arguments]    ${data}
-    ${amount}=    Evaluate    random.randint(100000, 9999999)
+    ${amount}=    Evaluate    random.randint(100000, 9999999)    modules=random
     ${currency}=    Get From List    ${VALID_CURRENCIES}    0
     ${description}=    Set Variable    Large amount test payment ${amount}
     
@@ -46,7 +46,7 @@ Set Large Amount Payment Data
 Set Precision Payment Data
     [Documentation]    Set high precision payment data
     [Arguments]    ${data}
-    ${amount}=    Evaluate    round(random.uniform(0.01, 999.99), 6)
+    ${amount}=    Evaluate    round(random.uniform(0.01, 999.99), 6)    modules=random
     ${currency}=    Get From List    ${VALID_CURRENCIES}    0
     ${description}=    Set Variable    Precision test payment ${amount}
     
@@ -57,7 +57,7 @@ Set Precision Payment Data
 Set Unicode Payment Data
     [Documentation]    Set unicode payment data
     [Arguments]    ${data}
-    ${amount}=    Evaluate    random.randint(1, 1000)
+    ${amount}=    Evaluate    random.randint(1, 1000)    modules=random
     ${currency}=    Get From List    ${VALID_CURRENCIES}    0
     ${description}=    Set Variable    测试支付 🚀 €£¥ ${amount}
     
@@ -68,7 +68,7 @@ Set Unicode Payment Data
 Set SpecialChars Payment Data
     [Documentation]    Set special characters payment data
     [Arguments]    ${data}
-    ${amount}=    Evaluate    random.randint(1, 1000)
+    ${amount}=    Evaluate    random.randint(1, 1000)    modules=random
     ${currency}=    Get From List    ${VALID_CURRENCIES}    0
     ${description}=    Set Variable    Payment with special chars: !@#$%^&*()_+-=[]{}|;':\",./<>? ${amount}
     
