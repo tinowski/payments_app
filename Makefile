@@ -84,6 +84,7 @@ robot-clean:
 	rm -rf robot_reports
 	rm -rf robot_results
 
+
 # Clean build artifacts
 clean:
 	@echo "Cleaning..."
@@ -152,6 +153,7 @@ help:
 	@echo "  robot-validation - Run Robot Framework validation tests"
 	@echo "  robot-performance - Run Robot Framework performance tests"
 	@echo "  robot-clean     - Clean Robot Framework results"
+
 	@echo "  clean           - Clean build artifacts"
 	@echo "  docker-build    - Build Docker image"
 	@echo "  docker-run      - Build and run Docker container"

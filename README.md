@@ -8,11 +8,19 @@ A robust, production-ready Go + GraphQL application for managing payments with f
 |-----------|--------|---------|
 | **Application** | ✅ Running | Server active on `http://localhost:8080` |
 | **Database** | ✅ Connected | SQLite with 50+ sample payments |
+
 | **Tests** | ✅ Passing | 153+ comprehensive tests, all green (118 Go + 35 Robot) |
 | **Security** | ✅ Secured | Comprehensive .gitignore and privacy protection |
 | **API** | ✅ Functional | GraphQL playground and endpoints working |
 | **Validation** | ✅ Comprehensive | Advanced validation with edge cases and security |
 | **Test Coverage** | ✅ Extensive | 100% success rate across all test frameworks |
+
+| **Tests** | ✅ Passing | 50+ comprehensive tests, all green |
+| **Security** | ✅ Secured | Comprehensive .gitignore and privacy protection |
+| **API** | ✅ Functional | GraphQL playground and endpoints working |
+| **Validation** | ✅ Comprehensive | Advanced validation with edge cases and security |
+| **Test Coverage** | ✅ Extensive | Currency, ID uniqueness, input validation, concurrent testing |
+
 
 ## ✨ Features
 

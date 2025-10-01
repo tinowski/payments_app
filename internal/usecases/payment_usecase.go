@@ -40,18 +40,22 @@ func (uc *PaymentUseCase) CreatePayment(ctx context.Context, input CreatePayment
 	if input.Amount <= 0 {
 		return nil, errors.New("amount must be greater than 0")
 	}
+
 	// Validate and normalize currency
 	currency, currencyErr := validateAndNormalizeCurrency(input.Currency)
 	if currencyErr != nil {
 		return nil, currencyErr
+
 	}
 	if strings.TrimSpace(input.Description) == "" {
 		return nil, errors.New("description is required")
 	}
 
+
 	// Create payment entity with normalized data
 	// Note: Domain layer expects pre-normalized data (trimmed, validated)
 	payment := domain.NewPayment(input.Amount, currency, strings.TrimSpace(input.Description))
+
 
 	// Save to repository
 	err := uc.repo.Create(ctx, payment)
@@ -106,19 +110,23 @@ func (uc *PaymentUseCase) UpdatePayment(ctx context.Context, input UpdatePayment
 		payment.Amount = *input.Amount
 	}
 	if input.Currency != nil {
+
 		// Validate and normalize currency
 		currency, currencyErr := validateAndNormalizeCurrency(*input.Currency)
 		if currencyErr != nil {
 			return nil, currencyErr
 		}
 		payment.Currency = currency
+
 	}
 	if input.Description != nil {
 		if strings.TrimSpace(*input.Description) == "" {
 			return nil, errors.New("description is required")
 		}
+
 		// Normalize description before assignment
 		payment.Description = strings.TrimSpace(*input.Description)
+
 	}
 	if input.Status != nil {
 		payment.UpdateStatus(*input.Status)
