@@ -91,6 +91,13 @@ make test-e2e               # Run E2E tests only
 make test-all               # Run all tests with new structure
 make test-coverage          # Run tests with coverage report (legacy)
 make test-coverage-new      # Run tests with coverage report (new structure)
+make robot-install          # Install Robot Framework dependencies
+make robot-test             # Run all Robot Framework tests
+make robot-smoke            # Run Robot Framework smoke tests
+make robot-crud             # Run Robot Framework CRUD tests
+make robot-validation       # Run Robot Framework validation tests
+make robot-performance      # Run Robot Framework performance tests
+make robot-clean            # Clean Robot Framework results
 make clean                   # Clean build artifacts
 make generate               # Generate GraphQL code
 make fmt                    # Format code
@@ -288,6 +295,14 @@ payments_app/
 │   ├── helpers/           # Shared test utilities
 │   │   └── test_helpers.go # Mock repositories, test data
 │   └── test_config.go     # Test configuration
+├── robot_tests/          # Robot Framework API tests
+│   ├── test_suites/      # Test suite files
+│   │   ├── payment_crud.robot      # CRUD operation tests
+│   │   ├── payment_validation.robot # Validation tests
+│   │   └── performance_tests.robot # Performance tests
+│   ├── resources/        # Test resources and keywords
+│   │   └── api_keywords.robot      # API testing keywords
+│   └── run_tests.robot   # Main test runner
 ├── pkg/                   # Public library code
 │   ├── logger/            # Logging utilities
 │   └── utils/             # Common utilities
@@ -308,6 +323,16 @@ payments_app/
 ## 🧪 Testing
 
 The application includes **50+ comprehensive tests** with full coverage reporting, following Clean Architecture principles and organized in a professional test structure with extensive validation and edge case testing.
+
+### 🤖 Robot Framework API Testing
+
+In addition to Go unit tests, the application includes **Robot Framework** for comprehensive API testing:
+
+- **📊 API Testing**: Complete GraphQL API test coverage
+- **🔍 Validation Testing**: Input validation and error handling
+- **⚡ Performance Testing**: Response time and load testing
+- **🧪 CRUD Testing**: Complete payment lifecycle testing
+- **📈 Reporting**: HTML reports with detailed test results
 
 ### 📁 Test Organization
 

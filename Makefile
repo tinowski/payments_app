@@ -1,4 +1,4 @@
-.PHONY: build run test clean docker-build docker-run help
+.PHONY: build run test clean docker-build docker-run help robot-test robot-smoke robot-crud robot-validation robot-performance robot-install robot-clean
 
 # Variables
 BINARY_NAME=payments_app
@@ -54,12 +54,43 @@ test-coverage-new:
 	go test -coverprofile=coverage.out ./tests/unit/... ./tests/integration/... ./tests/e2e/...
 	go tool cover -html=coverage.out -o coverage.html
 
+# Robot Framework Tests
+robot-install:
+	@echo "Installing Robot Framework dependencies..."
+	pip3 install -r requirements.txt
+
+robot-test:
+	@echo "Running Robot Framework tests..."
+	./run_robot_tests.sh all
+
+robot-smoke:
+	@echo "Running Robot Framework smoke tests..."
+	./run_robot_tests.sh smoke
+
+robot-crud:
+	@echo "Running Robot Framework CRUD tests..."
+	./run_robot_tests.sh crud
+
+robot-validation:
+	@echo "Running Robot Framework validation tests..."
+	./run_robot_tests.sh validation
+
+robot-performance:
+	@echo "Running Robot Framework performance tests..."
+	./run_robot_tests.sh performance
+
+robot-clean:
+	@echo "Cleaning Robot Framework results..."
+	rm -rf robot_reports
+	rm -rf robot_results
+
 # Clean build artifacts
 clean:
 	@echo "Cleaning..."
 	rm -f $(BINARY_NAME)
 	rm -f coverage.out coverage.html
 	rm -f *.db
+	$(MAKE) robot-clean
 
 # Docker build
 docker-build:
@@ -114,6 +145,13 @@ help:
 	@echo "  test-all        - Run all tests with new structure"
 	@echo "  test-coverage   - Run tests with coverage report (legacy)"
 	@echo "  test-coverage-new - Run tests with coverage report (new structure)"
+	@echo "  robot-install   - Install Robot Framework dependencies"
+	@echo "  robot-test      - Run all Robot Framework tests"
+	@echo "  robot-smoke     - Run Robot Framework smoke tests"
+	@echo "  robot-crud      - Run Robot Framework CRUD tests"
+	@echo "  robot-validation - Run Robot Framework validation tests"
+	@echo "  robot-performance - Run Robot Framework performance tests"
+	@echo "  robot-clean     - Clean Robot Framework results"
 	@echo "  clean           - Clean build artifacts"
 	@echo "  docker-build    - Build Docker image"
 	@echo "  docker-run      - Build and run Docker container"
