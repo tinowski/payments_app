@@ -66,7 +66,7 @@ func TestPaymentRepository_GetByID_NotFound(t *testing.T) {
 
 	_, err := repo.GetByID(context.Background(), "non-existent-id")
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "record not found")
+	assert.Contains(t, err.Error(), "payment not found")
 }
 
 func TestPaymentRepository_GetAll(t *testing.T) {
@@ -136,7 +136,7 @@ func TestPaymentRepository_Delete(t *testing.T) {
 	// Verify payment is deleted
 	_, err = repo.GetByID(context.Background(), payment.ID)
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "record not found")
+	assert.Contains(t, err.Error(), "payment not found")
 }
 
 func TestPaymentRepository_Delete_NotFound(t *testing.T) {
@@ -145,5 +145,5 @@ func TestPaymentRepository_Delete_NotFound(t *testing.T) {
 
 	err := repo.Delete(context.Background(), "non-existent-id")
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "record not found")
+	assert.Contains(t, err.Error(), "payment not found")
 }

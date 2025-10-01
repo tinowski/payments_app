@@ -229,10 +229,14 @@ func TestPaymentE2E_ErrorHandling(t *testing.T) {
 		`
 
 		resp := makeGraphQLRequest(t, query)
-		require.Nil(t, resp["errors"])
 
-		payment := resp["data"].(map[string]interface{})["payment"]
-		assert.Nil(t, payment)
+		// GraphQL should return an error for non-existent payment
+		require.NotNil(t, resp["errors"])
+		errors := resp["errors"].([]interface{})
+		require.Len(t, errors, 1)
+
+		errorMsg := errors[0].(map[string]interface{})["message"]
+		assert.Contains(t, errorMsg, "payment not found")
 	})
 }
 

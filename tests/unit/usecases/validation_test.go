@@ -295,7 +295,7 @@ func TestPaymentUseCase_UpdatePayment_AdvancedValidation(t *testing.T) {
 			updateInput: usecases.UpdatePaymentInput{
 				ID: "",
 			},
-			expectedErr: "payment not found",
+			expectedErr: "payment ID is required",
 		},
 		{
 			name: "update with non-existent ID",
