@@ -190,9 +190,24 @@ scripts/
 test-scripts/
 seed-scripts/
 
-# Test execution scripts (development tools)
-run_tests.sh
-run_tests_organized.sh
+# Test execution scripts (development tools) - exclude root level only
+/run_tests.sh
+/run_tests_organized.sh
+
+# Robot Framework test results and reports
+robot_tests/results/
+robot_tests/*.log
+robot_tests/*.html
+robot_tests/*.xml
+
+# Robot Framework test output files (root level)
+report.html
+log.html
+output.xml
+
+# Coverage reports
+coverage.html
+coverage.out
 
 # =============================================================================
 # PAYMENT-SPECIFIC SECURITY EXCLUSIONS

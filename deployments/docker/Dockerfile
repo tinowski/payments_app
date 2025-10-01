@@ -16,7 +16,7 @@ COPY . .
 RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -o main ./cmd/server
 
 # Final stage
-FROM alpine:latest
+FROM alpine:3.19
 
 RUN apk --no-cache add ca-certificates sqlite
 
@@ -25,8 +25,7 @@ WORKDIR /root/
 # Copy the binary from builder stage
 COPY --from=builder /app/main .
 
-# Copy database file if it exists
-COPY --from=builder /app/payments.db* ./
+# Do not copy database file; let the application initialize its own database at runtime
 
 # Expose port
 EXPOSE 8080

@@ -65,14 +65,16 @@ func TestPaymentUseCase_CreatePayment_AdvancedValidation(t *testing.T) {
 			expectedErr: "",
 		},
 		{
-			name:        "currency with special characters",
-			input:       usecases.CreatePaymentInput{Amount: 100, Currency: "USD-USD", Description: "Test"},
-			expectedErr: "",
+			name:  "currency with special characters",
+			input: usecases.CreatePaymentInput{Amount: 100, Currency: "USD-USD", Description: "Test"},
+
+			expectedErr: "currency must be exactly 3 characters",
 		},
 		{
-			name:        "currency with numbers",
-			input:       usecases.CreatePaymentInput{Amount: 100, Currency: "USD123", Description: "Test"},
-			expectedErr: "",
+			name:  "currency with numbers",
+			input: usecases.CreatePaymentInput{Amount: 100, Currency: "USD123", Description: "Test"},
+
+			expectedErr: "currency must be exactly 3 characters",
 		},
 		{
 			name:        "currency with mixed case",
@@ -295,7 +297,7 @@ func TestPaymentUseCase_UpdatePayment_AdvancedValidation(t *testing.T) {
 			updateInput: usecases.UpdatePaymentInput{
 				ID: "",
 			},
-			expectedErr: "payment not found",
+			expectedErr: "payment ID is required",
 		},
 		{
 			name: "update with non-existent ID",

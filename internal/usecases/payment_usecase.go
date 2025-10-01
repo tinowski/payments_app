@@ -40,15 +40,22 @@ func (uc *PaymentUseCase) CreatePayment(ctx context.Context, input CreatePayment
 	if input.Amount <= 0 {
 		return nil, errors.New("amount must be greater than 0")
 	}
-	if strings.TrimSpace(input.Currency) == "" {
-		return nil, errors.New("currency is required")
+
+	// Validate and normalize currency
+	currency, currencyErr := validateAndNormalizeCurrency(input.Currency)
+	if currencyErr != nil {
+		return nil, currencyErr
+
 	}
 	if strings.TrimSpace(input.Description) == "" {
 		return nil, errors.New("description is required")
 	}
 
-	// Create payment entity
-	payment := domain.NewPayment(input.Amount, input.Currency, input.Description)
+
+	// Create payment entity with normalized data
+	// Note: Domain layer expects pre-normalized data (trimmed, validated)
+	payment := domain.NewPayment(input.Amount, currency, strings.TrimSpace(input.Description))
+
 
 	// Save to repository
 	err := uc.repo.Create(ctx, payment)
@@ -103,16 +110,23 @@ func (uc *PaymentUseCase) UpdatePayment(ctx context.Context, input UpdatePayment
 		payment.Amount = *input.Amount
 	}
 	if input.Currency != nil {
-		if strings.TrimSpace(*input.Currency) == "" {
-			return nil, errors.New("currency is required")
+
+		// Validate and normalize currency
+		currency, currencyErr := validateAndNormalizeCurrency(*input.Currency)
+		if currencyErr != nil {
+			return nil, currencyErr
 		}
-		payment.Currency = *input.Currency
+		payment.Currency = currency
+
 	}
 	if input.Description != nil {
 		if strings.TrimSpace(*input.Description) == "" {
 			return nil, errors.New("description is required")
 		}
-		payment.Description = *input.Description
+
+		// Normalize description before assignment
+		payment.Description = strings.TrimSpace(*input.Description)
+
 	}
 	if input.Status != nil {
 		payment.UpdateStatus(*input.Status)
@@ -148,4 +162,31 @@ func (uc *PaymentUseCase) DeletePayment(ctx context.Context, id string) error {
 	}
 
 	return nil
+}
+
+// validateAndNormalizeCurrency validates and normalizes a currency code
+func validateAndNormalizeCurrency(currency string) (string, error) {
+	currency = strings.TrimSpace(currency)
+	if currency == "" {
+		return "", errors.New("currency is required")
+	}
+	if len(currency) != 3 {
+		return "", errors.New("currency must be exactly 3 characters")
+	}
+	// Normalize currency to uppercase for validation
+	currency = strings.ToUpper(currency)
+	if !isValidCurrencyCode(currency) {
+		return "", errors.New("currency must contain only letters")
+	}
+	return currency, nil
+}
+
+// isValidCurrencyCode validates that a currency code contains only letters
+func isValidCurrencyCode(currency string) bool {
+	for _, char := range currency {
+		if char < 'A' || char > 'Z' {
+			return false
+		}
+	}
+	return true
 }
