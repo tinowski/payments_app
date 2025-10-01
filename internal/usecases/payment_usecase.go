@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"payments_app/internal/domain"
+	"time"
 )
 
 // PaymentUseCase handles payment business logic
@@ -115,7 +116,7 @@ func (uc *PaymentUseCase) UpdatePayment(ctx context.Context, input UpdatePayment
 	if input.Status != nil {
 		payment.UpdateStatus(*input.Status)
 	} else {
-		payment.UpdatedAt = payment.UpdatedAt // Update timestamp
+		payment.UpdatedAt = time.Now() // Update timestamp
 	}
 
 	// Save updated payment

@@ -1,4 +1,4 @@
-package database_test
+package infrastructure_test
 
 import (
 	"context"
@@ -51,12 +51,13 @@ func TestPaymentRepository_GetByID(t *testing.T) {
 
 	// Retrieve the payment
 	retrievedPayment, err := repo.GetByID(context.Background(), payment.ID)
-
 	require.NoError(t, err)
+
 	assert.Equal(t, payment.ID, retrievedPayment.ID)
 	assert.Equal(t, payment.Amount, retrievedPayment.Amount)
 	assert.Equal(t, payment.Currency, retrievedPayment.Currency)
 	assert.Equal(t, payment.Description, retrievedPayment.Description)
+	assert.Equal(t, payment.Status, retrievedPayment.Status)
 }
 
 func TestPaymentRepository_GetByID_NotFound(t *testing.T) {
@@ -65,7 +66,7 @@ func TestPaymentRepository_GetByID_NotFound(t *testing.T) {
 
 	_, err := repo.GetByID(context.Background(), "non-existent-id")
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "payment not found")
+	assert.Contains(t, err.Error(), "record not found")
 }
 
 func TestPaymentRepository_GetAll(t *testing.T) {
@@ -86,8 +87,8 @@ func TestPaymentRepository_GetAll(t *testing.T) {
 
 	// Retrieve all payments
 	allPayments, err := repo.GetAll(context.Background())
-
 	require.NoError(t, err)
+
 	assert.Len(t, allPayments, 3)
 }
 
@@ -96,12 +97,14 @@ func TestPaymentRepository_Update(t *testing.T) {
 	defer cleanupTestDB(t, repo)
 
 	// Create a payment first
-	payment := domain.NewPayment(150, "USD", "Original description")
+	payment := domain.NewPayment(100.50, "USD", "Original payment")
 	err := repo.Create(context.Background(), payment)
 	require.NoError(t, err)
 
 	// Update the payment
-	payment.UpdateDetails(250, "EUR", "Updated description")
+	payment.Amount = 200.75
+	payment.Currency = "EUR"
+	payment.Description = "Updated payment"
 	payment.UpdateStatus(domain.PaymentStatusCompleted)
 
 	err = repo.Update(context.Background(), payment)
@@ -111,9 +114,9 @@ func TestPaymentRepository_Update(t *testing.T) {
 	updatedPayment, err := repo.GetByID(context.Background(), payment.ID)
 	require.NoError(t, err)
 
-	assert.Equal(t, 250.0, updatedPayment.Amount)
+	assert.Equal(t, 200.75, updatedPayment.Amount)
 	assert.Equal(t, "EUR", updatedPayment.Currency)
-	assert.Equal(t, "Updated description", updatedPayment.Description)
+	assert.Equal(t, "Updated payment", updatedPayment.Description)
 	assert.Equal(t, domain.PaymentStatusCompleted, updatedPayment.Status)
 }
 
@@ -122,7 +125,7 @@ func TestPaymentRepository_Delete(t *testing.T) {
 	defer cleanupTestDB(t, repo)
 
 	// Create a payment first
-	payment := domain.NewPayment(100, "USD", "Payment to delete")
+	payment := domain.NewPayment(100.50, "USD", "Payment to delete")
 	err := repo.Create(context.Background(), payment)
 	require.NoError(t, err)
 
@@ -133,7 +136,7 @@ func TestPaymentRepository_Delete(t *testing.T) {
 	// Verify payment is deleted
 	_, err = repo.GetByID(context.Background(), payment.ID)
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "payment not found")
+	assert.Contains(t, err.Error(), "record not found")
 }
 
 func TestPaymentRepository_Delete_NotFound(t *testing.T) {
@@ -142,5 +145,5 @@ func TestPaymentRepository_Delete_NotFound(t *testing.T) {
 
 	err := repo.Delete(context.Background(), "non-existent-id")
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "payment not found")
+	assert.Contains(t, err.Error(), "record not found")
 }

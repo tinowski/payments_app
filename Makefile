@@ -20,11 +20,38 @@ test:
 	@echo "Running tests..."
 	go test -v ./...
 
+# Run unit tests only
+test-unit:
+	@echo "Running unit tests..."
+	go test -v ./tests/unit/...
+
+# Run integration tests only
+test-integration:
+	@echo "Running integration tests..."
+	go test -v ./tests/integration/...
+
+# Run E2E tests only
+test-e2e:
+	@echo "Running E2E tests..."
+	go test -v ./tests/e2e/...
+
+# Run all tests with new structure
+test-all:
+	@echo "Running all tests with new structure..."
+	go test -v ./tests/unit/... ./tests/integration/... ./tests/e2e/...
+
 # Run tests with coverage
 test-coverage:
 	@echo "Running tests with coverage..."
 	go test -v -cover ./...
 	go test -coverprofile=coverage.out ./...
+	go tool cover -html=coverage.out -o coverage.html
+
+# Run tests with coverage (new structure)
+test-coverage-new:
+	@echo "Running tests with coverage (new structure)..."
+	go test -v -cover ./tests/unit/... ./tests/integration/... ./tests/e2e/...
+	go test -coverprofile=coverage.out ./tests/unit/... ./tests/integration/... ./tests/e2e/...
 	go tool cover -html=coverage.out -o coverage.html
 
 # Clean build artifacts
@@ -80,8 +107,13 @@ help:
 	@echo "Available commands:"
 	@echo "  build           - Build the application"
 	@echo "  run             - Build and run the application"
-	@echo "  test            - Run tests"
-	@echo "  test-coverage   - Run tests with coverage report"
+	@echo "  test            - Run all tests (legacy)"
+	@echo "  test-unit       - Run unit tests only"
+	@echo "  test-integration - Run integration tests only"
+	@echo "  test-e2e        - Run E2E tests only"
+	@echo "  test-all        - Run all tests with new structure"
+	@echo "  test-coverage   - Run tests with coverage report (legacy)"
+	@echo "  test-coverage-new - Run tests with coverage report (new structure)"
 	@echo "  clean           - Clean build artifacts"
 	@echo "  docker-build    - Build Docker image"
 	@echo "  docker-run      - Build and run Docker container"

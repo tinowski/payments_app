@@ -78,8 +78,13 @@ make run
 make help                    # Show all available commands
 make build                   # Build the application
 make run                     # Build and run the application
-make test                    # Run all tests
-make test-coverage          # Run tests with coverage report
+make test                    # Run all tests (legacy)
+make test-unit              # Run unit tests only
+make test-integration       # Run integration tests only
+make test-e2e               # Run E2E tests only
+make test-all               # Run all tests with new structure
+make test-coverage          # Run tests with coverage report (legacy)
+make test-coverage-new      # Run tests with coverage report (new structure)
 make clean                   # Clean build artifacts
 make generate               # Generate GraphQL code
 make fmt                    # Format code
@@ -256,20 +261,27 @@ payments_app/
 ├── internal/              # Private application code
 │   ├── domain/            # Business entities and rules
 │   │   ├── payment.go     # Payment domain model
-│   │   ├── repository.go  # Repository interfaces
-│   │   └── test/          # Domain tests
+│   │   └── repository.go  # Repository interfaces
 │   ├── usecases/          # Application business logic
-│   │   ├── payment_usecase.go # Payment use cases
-│   │   └── test/          # Use case tests
+│   │   └── payment_usecase.go # Payment use cases
 │   ├── interfaces/        # External interfaces (GraphQL, REST)
-│   │   ├── graphql/       # GraphQL resolvers
-│   │   │   ├── graphql_resolver.go
-│   │   │   └── test/      # Integration tests
-│   │   └── rest/          # REST API (future)
+│   │   └── graphql/       # GraphQL resolvers
+│   │       └── graphql_resolver.go
 │   └── infrastructure/    # External concerns (database, external APIs)
 │       └── database/      # Database implementation
-│           ├── payment_repository.go
-│           └── test/      # Database tests
+│           └── payment_repository.go
+├── tests/                 # Organized test suite
+│   ├── unit/              # Unit tests (isolated, fast)
+│   │   ├── domain/        # Domain entity tests
+│   │   ├── usecases/      # Use case business logic tests
+│   │   └── infrastructure/ # Database repository tests
+│   ├── integration/       # Integration tests (with dependencies)
+│   │   └── graphql_test.go # GraphQL API integration tests
+│   ├── e2e/               # End-to-end tests (full system)
+│   │   └── payments_e2e_test.go # Complete payment flow tests
+│   ├── helpers/           # Shared test utilities
+│   │   └── test_helpers.go # Mock repositories, test data
+│   └── test_config.go     # Test configuration
 ├── pkg/                   # Public library code
 │   ├── logger/            # Logging utilities
 │   └── utils/             # Common utilities
@@ -280,7 +292,7 @@ payments_app/
 │   ├── docker/            # Docker configurations
 │   └── kubernetes/        # Kubernetes configurations
 ├── migrations/            # Database migrations
-├── graph/                 # Legacy GraphQL files (to be removed)
+├── graph/                 # GraphQL generated code
 ├── cmd/server/main.go     # Application entry point
 ├── go.mod                 # Go module file
 ├── Makefile              # Build automation
@@ -289,45 +301,76 @@ payments_app/
 
 ## 🧪 Testing
 
-The application includes **15+ comprehensive tests** with full coverage reporting, following Clean Architecture principles.
+The application includes **26+ comprehensive tests** with full coverage reporting, following Clean Architecture principles and organized in a professional test structure.
+
+### 📁 Test Organization
+
+Tests are organized by type and purpose for better maintainability:
+
+```
+tests/
+├── unit/                    # Unit tests (isolated, fast)
+│   ├── domain/             # Domain entity tests
+│   ├── usecases/           # Use case business logic tests
+│   └── infrastructure/     # Database repository tests
+├── integration/            # Integration tests (with dependencies)
+│   └── graphql_test.go     # GraphQL API integration tests
+├── e2e/                    # End-to-end tests (full system)
+│   └── payments_e2e_test.go # Complete payment flow tests
+├── helpers/                # Shared test utilities
+│   └── test_helpers.go     # Mock repositories, test data
+└── test_config.go         # Test configuration
+```
 
 ### 🚀 Running Tests
 
 ```bash
-# Run all tests
+# Run all tests (legacy)
 make test
 
+# Run unit tests only
+make test-unit
+
+# Run integration tests only
+make test-integration
+
+# Run E2E tests only (requires running server)
+make test-e2e
+
+# Run all tests with new structure
+make test-all
+
 # Run tests with coverage report
-make test-coverage
+make test-coverage-new
 
-# Run the test script
-./run_tests.sh
+# Use the organized test script
+./run_tests_organized.sh
 
-# Run specific test packages
-go test -v ./internal/domain/test
-go test -v ./internal/usecases/test
-go test -v ./internal/infrastructure/database/test
-go test -v ./internal/interfaces/graphql/test
+# Run specific test categories
+go test ./tests/unit/... -v
+go test ./tests/integration/... -v
+go test ./tests/e2e/... -v
 ```
 
 ### 📊 Test Results
 
 **✅ All Tests Passing:**
-- **Domain Tests**: 4 tests - Business entities and rules
-- **Database Tests**: 6 tests - Repository operations and data persistence
-- **Use Case Tests**: 7 tests - Business logic and validation
-- **GraphQL Tests**: 2 tests - API integration and HTTP endpoints
+- **Unit Tests**: 17 tests - Fast, isolated tests with mocked dependencies
+- **Integration Tests**: 2 tests - Tests with real dependencies (database, GraphQL)
+- **E2E Tests**: 7 tests - Complete user flows against running application
 
 ### 🏗️ Test Architecture
 
-Tests are organized by Clean Architecture layers:
+Tests are organized by type and Clean Architecture layers:
 
-| Layer | Location | Tests | Purpose |
-|-------|----------|-------|---------|
-| **Domain** | `internal/domain/test/` | 4 tests | Business entities and rules |
-| **Use Cases** | `internal/usecases/test/` | 7 tests | Application business logic |
-| **Infrastructure** | `internal/infrastructure/database/test/` | 6 tests | Database operations |
-| **Interfaces** | `internal/interfaces/graphql/test/` | 2 tests | GraphQL API endpoints |
+| Test Type | Location | Tests | Purpose | Speed |
+|-----------|----------|-------|---------|-------|
+| **Unit Tests** | `tests/unit/` | 17 tests | Isolated business logic | Fast (< 1s) |
+| ├─ Domain | `tests/unit/domain/` | 4 tests | Business entities and rules | Very Fast |
+| ├─ Use Cases | `tests/unit/usecases/` | 7 tests | Business logic with mocks | Fast |
+| └─ Infrastructure | `tests/unit/infrastructure/` | 6 tests | Database operations | Fast |
+| **Integration** | `tests/integration/` | 2 tests | GraphQL API with real DB | Medium (1-5s) |
+| **E2E** | `tests/e2e/` | 7 tests | Complete user flows | Slow (5-30s) |
 
 ### ✅ Test Coverage
 
@@ -337,6 +380,42 @@ Tests are organized by Clean Architecture layers:
 - **GraphQL Integration**: Full HTTP GraphQL API with real database
 - **Clean Architecture**: Tests respect architectural boundaries
 - **Thread Safety**: Concurrent operations tested
+- **Timestamp Updates**: Comprehensive timestamp update testing
+- **Shared Helpers**: Reusable test utilities and mock repositories
+
+### 🎯 Test Features
+
+#### **Professional Organization**
+- **Clear Separation**: Tests organized by type (unit, integration, e2e)
+- **Logical Grouping**: Tests grouped by domain (domain, usecases, infrastructure)
+- **Shared Utilities**: Common test helpers and mock repositories
+- **Environment Configuration**: Flexible test configuration
+
+#### **Comprehensive Coverage**
+- **Unit Tests**: Fast, isolated tests with mocked dependencies
+- **Integration Tests**: Tests with real dependencies (database, GraphQL)
+- **E2E Tests**: Complete user flows against running application
+- **Error Scenarios**: Invalid inputs, not found cases, edge cases
+
+#### **Developer Experience**
+- **Fast Feedback**: Run only unit tests during development
+- **CI/CD Ready**: Easy to integrate with build pipelines
+- **Clear Commands**: Intuitive test commands for different scenarios
+- **Detailed Reporting**: Comprehensive test results and coverage
+
+### 🚀 Test Scripts
+
+#### **Organized Test Runner**
+```bash
+# Use the professional test script
+./run_tests_organized.sh
+```
+
+This script provides:
+- **Colorized output** with clear test results
+- **Categorized execution** by test type
+- **Coverage reporting** with detailed metrics
+- **Result summary** with pass/fail status
 
 ## Development
 
