@@ -19,7 +19,7 @@ Test API Response Time
     ${response_time}=    Evaluate    ${end_time} - ${start_time}
     Should Be True    ${response_time} < 5    Response time should be less than 5 seconds, got ${response_time}s
 
-Test Health Check Performance
+Validate Health Check Performance
     [Documentation]    Test health check endpoint performance
     Test Health Check Performance
 

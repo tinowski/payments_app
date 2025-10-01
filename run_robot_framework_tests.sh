@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Robot Framework Test Runner Script
-# Usage: ./run_robot_tests.sh [test_type] [options]
+# Usage: ./run_robot_framework_tests.sh [test_type] [options]
 
 set -e
 
