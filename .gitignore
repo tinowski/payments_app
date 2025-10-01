@@ -24,9 +24,202 @@ profile.cov
 go.work
 go.work.sum
 
-# env file
-.env
+# =============================================================================
+# SECURITY-CRITICAL FILES - DO NOT COMMIT
+# =============================================================================
 
-# Editor/IDE
-# .idea/
-# .vscode/
+# Environment files and configuration
+.env
+.env.*
+!.env.example
+.env.local
+.env.development
+.env.test
+.env.production
+.env.staging
+config.local.*
+config.production.*
+config.staging.*
+secrets.yaml
+secrets.yml
+secrets.json
+credentials.json
+service-account.json
+key.json
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-wal
+*.db-shm
+payments.db
+payments.sqlite
+payments.sqlite3
+
+# Logs and sensitive runtime data
+*.log
+logs/
+log/
+*.log.*
+access.log
+error.log
+debug.log
+audit.log
+
+# Temporary files and caches
+tmp/
+temp/
+.tmp/
+.temp/
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+.classpath
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+*.rej
+
+# Archive files
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# Compiled binaries and executables
+payments_app
+payments-api
+main
+server
+client
+
+# Docker and container files
+.dockerignore
+docker-compose.override.yml
+docker-compose.local.yml
+
+# Kubernetes secrets and configs
+k8s-secrets/
+k8s-config/
+*.secret.yaml
+*.secret.yml
+
+# Terraform state and sensitive files
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+terraform.tfvars
+*.auto.tfvars
+
+# Node.js (if any frontend components)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn-integrity
+
+# Python (if any scripts)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Java (if any components)
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+target/
+
+# =============================================================================
+# PAYMENT-SPECIFIC SECURITY EXCLUSIONS
+# =============================================================================
+
+# Payment processor credentials
+stripe-keys.json
+paypal-credentials.json
+square-credentials.json
+adyen-credentials.json
+
+# PCI DSS related files
+pci-data/
+card-data/
+payment-tokens/
+merchant-keys/
+
+# Audit and compliance files
+audit-logs/
+compliance-reports/
+security-scans/
+
+# Monitoring and alerting configs with sensitive data
+monitoring-config.json
+alerting-rules.yaml
+grafana-datasources.yaml
+
+# SSL/TLS certificates and keys
+ssl/
+certs/
+certificates/
+*.crt
+*.cert
+*.pem
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.truststore
+
+# API keys and tokens
+api-keys.json
+tokens.json
+auth-keys.yaml
