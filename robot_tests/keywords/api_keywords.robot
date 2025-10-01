@@ -33,10 +33,11 @@ Send GraphQL Request
 Create Payment
     [Documentation]    Create a new payment via GraphQL
     [Arguments]    ${amount}    ${currency}    ${description}
-    ${escaped_description}=    Replace String    ${description}    "    \"
-    ${escaped_description}=    Replace String    ${escaped_description}    \    \\
-    ${query}=    Set Variable    mutation { createPayment(input: { amount: ${amount}, currency: "${currency}", description: "${escaped_description}" }) { id amount currency description status createdAt updatedAt } }
+    ${query}=    Set Variable    mutation { createPayment(input: { amount: ${amount}, currency: "${currency}", description: "${description}" }) { id amount currency description status createdAt updatedAt } }
+    Log    Generated query: ${query}
     ${response}=    Send GraphQL Request    ${query}
+    Log    Response status: ${response.status_code}
+    Log    Response body: ${response.text}
     Should Be Equal As Strings    ${response.status_code}    200
     ${json}=    Set Variable    ${response.json()}
     Should Not Contain    ${json}    errors
